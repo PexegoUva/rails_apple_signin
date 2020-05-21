@@ -6,22 +6,18 @@ require "apple_id_token/version"
 Gem::Specification.new do |spec|
   spec.name          = "apple_id_token"
   spec.version       = AppleIdToken::VERSION
-  spec.authors       = ["PexegoUva"]
+  spec.authors       = ["Samuel Villaescusa Vinader"]
   spec.email         = ["samuelvv22@gmail.com"]
 
-  spec.license       = 'APACHE-2.0'
+  spec.license       = 'MIT'
   spec.summary       = 'Apple Sign In Token utilities'
   spec.description   = 'Apple Sign In Token utilities; parse and check validity of token'
   spec.homepage      = "https://github.com/PexegoUva/rails_apple_signin"
 
-  # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
-  # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
-
     spec.metadata["homepage_uri"] = spec.homepage
     spec.metadata["source_code_uri"] = "https://github.com/PexegoUva/rails_apple_signin"
-    spec.metadata["changelog_uri"] = "https://github.com/PexegoUva/rails_apple_signin/blob/master/CHANGELOG.md"
+    spec.metadata["changelog_uri"] = "https://github.com/PexegoUva/rails_apple_signin/blob/master/Changelog.md"
   else
     raise "RubyGems 2.0 or newer is required to protect against " \
       "public gem pushes."
@@ -42,5 +38,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", ">= 12.3.3"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency 'fakeweb'
+  spec.add_development_dependency 'fakeweb', ">= 1.3.0"
 end
