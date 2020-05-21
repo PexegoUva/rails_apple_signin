@@ -42,6 +42,14 @@ RSpec.describe AppleIdToken::Validator do
               alg: "RS256",
               n: jwk_n,
               e: jwk_e
+            },
+            {
+              kty: "RSA",
+              kid: jwk.kid,
+              use: "sig",
+              alg: "RS256",
+              n: jwk_n,
+              e: jwk_e
             }
           ]
         }

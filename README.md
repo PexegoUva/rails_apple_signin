@@ -1,6 +1,8 @@
 # AppleIdToken
 
-This gem is a symple wrapper around Apple Sign In to validate provided tokens from https://developer.apple.com/documentation/sign_in_with_apple/generate_and_validate_tokens. You can also send tokens provided by official Apple library for iOS and Android applications.
+[![Gem Version](https://badge.fury.io/rb/apple_id_token.svg)](https://badge.fury.io/rb/apple_id_token)
+
+This gem is a simple wrapper around Apple Sign In to validate provided tokens from https://developer.apple.com/documentation/sign_in_with_apple/generate_and_validate_tokens. You can also send tokens provided by official Apple library for iOS and Android applications.
 
 We make use of JWT Ruby gem -> https://github.com/jwt/ruby-jwt to decode token provided by Apple and also it makes all the validations mentioned here -> https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api/verifying_a_user to ensure integrity of provided token.
 

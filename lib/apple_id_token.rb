@@ -62,6 +62,7 @@ module AppleIdToken
             )
 
             payload = decoded_token.first
+            break unless payload.nil? # Avoid more iterations if payload retrieved.
           rescue JWT::JWKError
             raise InvalidPublicKeyError, 'Provided public key was invalid'
           rescue JWT::ExpiredSignature
@@ -70,7 +71,7 @@ module AppleIdToken
             raise JWTSignatureError, 'Token not verified as issued by Apple'
           rescue JWT::InvalidAudError
             raise JWTAudienceError, 'Token audience mismatch'
-          rescue JWT::DecodeError
+          rescue JWT::DecodeError => e
             nil # Try another public key.
           end
         end
