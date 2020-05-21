@@ -81,7 +81,7 @@ RSpec.describe AppleIdToken::Validator do
 
         it 'returns payload with provided info' do
           validated_payload = validator.validate(token: token, aud: aud)
-          validated_payload_sym = validated_payload.transform_keys(&:to_sym)
+          validated_payload_sym = Hash[validated_payload.map{ |k, v| [k.to_sym, v] }]
           expect(validated_payload_sym).to eq payload
         end
       end

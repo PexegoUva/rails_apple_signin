@@ -49,7 +49,7 @@ module AppleIdToken
         payload = nil
         public_keys.each do |public_key|
           # As jwk from jwt library needs Hashes with keys as symbols.
-          public_key = public_key.transform_keys(&:to_sym)
+          public_key = Hash[public_key.map{ |k, v| [k.to_sym, v] }]
 
           begin
             jwk = JWT::JWK.import(public_key)

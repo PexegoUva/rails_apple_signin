@@ -1,8 +1,5 @@
 require "bundler/setup"
 require "apple_id_token"
-require 'simplecov'
-
-SimpleCov.start
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

@@ -14,6 +14,8 @@ Gem::Specification.new do |spec|
   spec.description   = 'Apple Sign In Token utilities; parse and check validity of token'
   spec.homepage      = "https://github.com/PexegoUva/rails_apple_signin"
 
+  spec.required_ruby_version = '>= 2.3'
+
   if spec.respond_to?(:metadata)
     spec.metadata["homepage_uri"] = spec.homepage
     spec.metadata["source_code_uri"] = "https://github.com/PexegoUva/rails_apple_signin"
@@ -35,9 +37,9 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'jwt', '~> 2.2.1'
   spec.add_runtime_dependency 'httparty', '~> 0.17.3'
 
-  spec.add_development_dependency "bundler", "~> 1.17"
+  spec.add_development_dependency "bundler", ">= 1.17"
   spec.add_development_dependency "rake", "~> 12.3.3"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency 'fakeweb', "~> 1.3.0"
-  spec.add_development_dependency 'simplecov', "~> 0.17.1"
+  spec.add_development_dependency 'openssl', "~> 2.1.2"
 end
