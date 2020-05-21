@@ -1,6 +1,7 @@
 # AppleIdToken
 
 [![Gem Version](https://badge.fury.io/rb/apple_id_token.svg)](https://badge.fury.io/rb/apple_id_token)
+[![Build Status](https://travis-ci.org/PexegoUva/rails_apple_signin.svg?branch=master)](https://travis-ci.org/PexegoUva/rails_apple_signin)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/d7038393581f138d71da/test_coverage)](https://codeclimate.com/github/PexegoUva/rails_apple_signin/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/d7038393581f138d71da/maintainability)](https://codeclimate.com/github/PexegoUva/rails_apple_signin/maintainability)
 
