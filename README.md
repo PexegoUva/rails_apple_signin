@@ -1,8 +1,8 @@
 # AppleIdToken
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/apple_id_token`. To experiment with that code, run `bin/console` for an interactive prompt.
+This gem is a symple wrapper around Apple Sign In to validate provided tokens from https://developer.apple.com/documentation/sign_in_with_apple/generate_and_validate_tokens. You can also send tokens provided by official Apple library for iOS and Android applications.
 
-TODO: Delete this and the text above, and describe your gem
+We make use of JWT Ruby gem -> https://github.com/jwt/ruby-jwt to decode token provided by Apple and also it makes all the validations mentioned here -> https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_rest_api/verifying_a_user to ensure integrity of provided token.
 
 ## Installation
 
@@ -22,14 +22,28 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+To make use of the gem, just call `.validate` method of `AppleIdToken::Validator`.
+You need to provide token issued by Apple and also your APP_ID generated here -> https://help.apple.com/developer-account/#/devde676e696 as audience.
+
+```ruby
+validator = AppleIdToken::Validator
+begin
+  payload = validator.validate(token: token, aud: audience)
+  user_id = payload['sub']
+  email = payload['email']
+rescue AppleIdToken::PublicKeysError => e
+  report "Provided keys are invalid: #{e}"
+rescue AppleIdToken::ValidationError => e
+  report "Cannot validate: #{e}"
+end
+```
 
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/apple_id_token.
+Bug reports and pull requests are welcome on GitHub at https://github.com/PexegoUva/rails_apple_signin
