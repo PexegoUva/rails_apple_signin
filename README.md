@@ -1,6 +1,7 @@
 # AppleIdToken
 
 [![Gem Version](https://badge.fury.io/rb/apple_id_token.svg)](https://badge.fury.io/rb/apple_id_token)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/d7038393581f138d71da/test_coverage)](https://codeclimate.com/github/PexegoUva/rails_apple_signin/test_coverage)
 
 This gem is a simple wrapper around Apple Sign In to validate provided tokens from https://developer.apple.com/documentation/sign_in_with_apple/generate_and_validate_tokens. You can also send tokens provided by official Apple library for iOS and Android applications.
 

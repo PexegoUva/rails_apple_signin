@@ -47,7 +47,6 @@ module AppleIdToken
 
       def check_against_certs(token, aud, public_keys)
         payload = nil
-
         public_keys.each do |public_key|
           # As jwk from jwt library needs Hashes with keys as symbols.
           public_key = public_key.transform_keys(&:to_sym)
@@ -61,8 +60,7 @@ module AppleIdToken
               }
             )
 
-            payload = decoded_token.first
-            break unless payload.nil? # Avoid more iterations if payload retrieved.
+            return payload = decoded_token.first
           rescue JWT::JWKError
             raise InvalidPublicKeyError, 'Provided public key was invalid'
           rescue JWT::ExpiredSignature
@@ -75,8 +73,6 @@ module AppleIdToken
             nil # Try another public key.
           end
         end
-
-        payload
       end
     end
   end
