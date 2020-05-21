@@ -25,30 +25,34 @@ RSpec.describe AppleIdToken::Validator do
     end
 
     context 'when valid public keys' do
+      let(:successful_body_response) {
+        {
+          keys: [
+            {
+              kty: "RSA",
+              kid: "86D88Kf",
+              use: "sig",
+              alg: "RS256",
+              n: "iGaLqP6y-SJCCBq5Hv6pGDbG_SQ11MNjH7rWHcCFYz4hGwHC4lcSurTlV8u3avoVNM8jXevG1Iu1SY11qInqUvjJur--hghr1b56OPJu6H1iKulSxGjEIyDP6c5BdE1uwprYyr4IO9th8fOwCPygjLFrh44XEGbDIFeImwvBAGOhmMB2AD1n1KviyNsH0bEB7phQtiLk-ILjv1bORSRl8AK677-1T8isGfHKXGZ_ZGtStDe7Lu0Ihp8zoUt59kx2o9uWpROkzF56ypresiIl4WprClRCjz8x6cPZXU2qNWhu71TQvUFwvIvbkE1oYaJMb0jcOTmBRZA2QuYw-zHLwQ",
+              e: "AQAB"
+            },
+            {
+              kty: "RSA",
+              kid: "eXaunmL",
+              use: "sig",
+              alg: "RS256",
+              n: "4dGQ7bQK8LgILOdLsYzfZjkEAoQeVC_aqyc8GC6RX7dq_KvRAQAWPvkam8VQv4GK5T4ogklEKEvj5ISBamdDNq1n52TpxQwI2EqxSk7I9fKPKhRt4F8-2yETlYvye-2s6NeWJim0KBtOVrk0gWvEDgd6WOqJl_yt5WBISvILNyVg1qAAM8JeX6dRPosahRVDjA52G2X-Tip84wqwyRpUlq2ybzcLh3zyhCitBOebiRWDQfG26EH9lTlJhll-p_Dg8vAXxJLIJ4SNLcqgFeZe4OfHLgdzMvxXZJnPp_VgmkcpUdRotazKZumj6dBPcXI_XID4Z4Z3OM1KrZPJNdUhxw",
+              e: "AQAB"
+            }
+          ]
+        }
+      }
+
       before do
         FakeWeb::register_uri(:get,
           AppleIdToken::Validator::APPLE_JWKS_URI,
           status: ['200', 'OK'],
-          body: {
-            "keys": [
-              {
-                "kty": "RSA",
-                "kid": "86D88Kf",
-                "use": "sig",
-                "alg": "RS256",
-                "n": "iGaLqP6y-SJCCBq5Hv6pGDbG_SQ11MNjH7rWHcCFYz4hGwHC4lcSurTlV8u3avoVNM8jXevG1Iu1SY11qInqUvjJur--hghr1b56OPJu6H1iKulSxGjEIyDP6c5BdE1uwprYyr4IO9th8fOwCPygjLFrh44XEGbDIFeImwvBAGOhmMB2AD1n1KviyNsH0bEB7phQtiLk-ILjv1bORSRl8AK677-1T8isGfHKXGZ_ZGtStDe7Lu0Ihp8zoUt59kx2o9uWpROkzF56ypresiIl4WprClRCjz8x6cPZXU2qNWhu71TQvUFwvIvbkE1oYaJMb0jcOTmBRZA2QuYw-zHLwQ",
-                "e": "AQAB"
-              },
-              {
-                "kty": "RSA",
-                "kid": "eXaunmL",
-                "use": "sig",
-                "alg": "RS256",
-                "n": "4dGQ7bQK8LgILOdLsYzfZjkEAoQeVC_aqyc8GC6RX7dq_KvRAQAWPvkam8VQv4GK5T4ogklEKEvj5ISBamdDNq1n52TpxQwI2EqxSk7I9fKPKhRt4F8-2yETlYvye-2s6NeWJim0KBtOVrk0gWvEDgd6WOqJl_yt5WBISvILNyVg1qAAM8JeX6dRPosahRVDjA52G2X-Tip84wqwyRpUlq2ybzcLh3zyhCitBOebiRWDQfG26EH9lTlJhll-p_Dg8vAXxJLIJ4SNLcqgFeZe4OfHLgdzMvxXZJnPp_VgmkcpUdRotazKZumj6dBPcXI_XID4Z4Z3OM1KrZPJNdUhxw",
-                "e": "AQAB"
-              }
-            ]
-          }
+          body: JSON.dump(successful_body_response)
         )
       end
 
@@ -62,8 +66,7 @@ RSpec.describe AppleIdToken::Validator do
 
       context 'and no payload found' do
         before do
-          allow(validator).to receive(:get_public_keys).and_return(true)
-          allow(validator).to receive(:check_against_certs).with(fake_token, fake_aud).and_return(nil)
+          allow(validator).to receive(:check_against_certs).and_return(nil)
         end
 
         it 'raises SignatureError' do
@@ -71,6 +74,43 @@ RSpec.describe AppleIdToken::Validator do
             validator.validate(token: fake_token, aud: fake_aud)
           }.to raise_error(AppleIdToken::SignatureError)
         end
+      end
+    end
+
+    context 'when no valid public keys' do
+      let(:successful_body_response) {
+        {
+          keys: [
+            {
+              kid: "86D88Kf",
+              use: "sig",
+              alg: "RS256",
+              n: "iGaLqP6y-SJCCBq5Hv6pGDbG_SQ11MNjH7rWHcCFYz4hGwHC4lcSurTlV8u3avoVNM8jXevG1Iu1SY11qInqUvjJur--hghr1b56OPJu6H1iKulSxGjEIyDP6c5BdE1uwprYyr4IO9th8fOwCPygjLFrh44XEGbDIFeImwvBAGOhmMB2AD1n1KviyNsH0bEB7phQtiLk-ILjv1bORSRl8AK677-1T8isGfHKXGZ_ZGtStDe7Lu0Ihp8zoUt59kx2o9uWpROkzF56ypresiIl4WprClRCjz8x6cPZXU2qNWhu71TQvUFwvIvbkE1oYaJMb0jcOTmBRZA2QuYw-zHLwQ",
+              e: "AQAB"
+            },
+            {
+              kid: "eXaunmL",
+              use: "sig",
+              alg: "RS256",
+              n: "4dGQ7bQK8LgILOdLsYzfZjkEAoQeVC_aqyc8GC6RX7dq_KvRAQAWPvkam8VQv4GK5T4ogklEKEvj5ISBamdDNq1n52TpxQwI2EqxSk7I9fKPKhRt4F8-2yETlYvye-2s6NeWJim0KBtOVrk0gWvEDgd6WOqJl_yt5WBISvILNyVg1qAAM8JeX6dRPosahRVDjA52G2X-Tip84wqwyRpUlq2ybzcLh3zyhCitBOebiRWDQfG26EH9lTlJhll-p_Dg8vAXxJLIJ4SNLcqgFeZe4OfHLgdzMvxXZJnPp_VgmkcpUdRotazKZumj6dBPcXI_XID4Z4Z3OM1KrZPJNdUhxw",
+              e: "AQAB"
+            }
+          ]
+        }
+      }
+
+      before do
+        FakeWeb::register_uri(:get,
+          AppleIdToken::Validator::APPLE_JWKS_URI,
+          status: ['200', 'OK'],
+          body: JSON.dump(successful_body_response)
+        )
+      end
+
+      it 'raises error InvalidPublicKey' do
+        expect {
+          validator.validate(token: fake_token, aud: fake_aud)
+        }.to raise_error(AppleIdToken::InvalidPublicKey)
       end
     end
   end
