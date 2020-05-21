@@ -32,12 +32,12 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency 'jwt', '>= 2.2.1'
-  spec.add_runtime_dependency 'httparty', '>= 0.17.3'
+  spec.add_runtime_dependency 'jwt', '~> 2.2.1'
+  spec.add_runtime_dependency 'httparty', '~> 0.17.3'
 
   spec.add_development_dependency "bundler", "~> 1.17"
-  spec.add_development_dependency "rake", ">= 12.3.3"
+  spec.add_development_dependency "rake", "~> 12.3.3"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency 'fakeweb', ">= 1.3.0"
-  spec.add_development_dependency 'simplecov', ">= 0.18.5"
+  spec.add_development_dependency 'fakeweb', "~> 1.3.0"
+  spec.add_development_dependency 'simplecov', "~> 0.17.1"
 end
