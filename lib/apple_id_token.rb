@@ -6,9 +6,9 @@ require 'json'
 module AppleIdToken
   class PublicKeysError < StandardError; end
   class ValidationError < StandardError; end
-  class SignatureError < ValidationError; end
-  class InvalidPublicKey < ValidationError; end
-  class ExpiredJWTSignature < ValidationError; end
+  class JWTExpiredSignatureError < ValidationError; end
+  class InvalidPublicKeyError < ValidationError; end
+  class JWTSignatureError < ValidationError; end
   class JWTAudienceError < ValidationError; end
 
   class Validator
@@ -17,7 +17,7 @@ module AppleIdToken
 
     HTTP_OK = 200
 
-    JWT_HS256 = 'HS256'
+    JWT_RS256 = 'RS256'
 
     class << self
       def validate(token:, aud:)
@@ -26,11 +26,13 @@ module AppleIdToken
           payload = check_against_certs(token, aud, public_keys)
 
           unless payload
-            raise SignatureError, 'Token not verified as issued by Apple'
+            raise JWTSignatureError, 'Token not verified as issued by Apple'
           end
         else
           raise PublicKeysError, 'Unable to retrieve Apple public keys'
         end
+
+        payload
       end
 
       private
@@ -52,26 +54,28 @@ module AppleIdToken
 
           begin
             jwk = JWT::JWK.import(public_key)
-            payload = JWT.decode(token, jwk.public_key , !!public_key, {
-                algorithm: JWT_HS256,
+            decoded_token = JWT.decode(token, jwk.public_key , !!public_key, {
+                algorithm: JWT_RS256,
                 iss: APPLE_ISSUER, verify_iss: true,
                 aud: aud, verify_aud: true
               }
             )
 
-            return nil unless payload
+            payload = decoded_token.first
           rescue JWT::JWKError
-            raise InvalidPublicKey, 'Provided public key was invalid'
+            raise InvalidPublicKeyError, 'Provided public key was invalid'
           rescue JWT::ExpiredSignature
-            raise ExpiredJWTSignature, 'Token signature is expired'
+            raise JWTExpiredSignatureError, 'Token signature is expired'
           rescue JWT::InvalidIssuerError
-            raise SignatureError, 'Token not verified as issued by Apple'
+            raise JWTSignatureError, 'Token not verified as issued by Apple'
           rescue JWT::InvalidAudError
             raise JWTAudienceError, 'Token audience mismatch'
           rescue JWT::DecodeError
             nil # Try another public key.
           end
         end
+
+        payload
       end
     end
   end
