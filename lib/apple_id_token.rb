@@ -73,6 +73,8 @@ module AppleIdToken
             nil # Try another public key.
           end
         end
+
+        payload
       end
     end
   end

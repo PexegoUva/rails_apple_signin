@@ -25,13 +25,26 @@ RSpec.describe AppleIdToken::Validator do
       end
     end
 
-    context 'when valid public keys' do
-      let(:binary) { 2 }
-      let(:jwk) { JWT::JWK.new(OpenSSL::PKey::RSA.new(2048)) }
-      let(:jwk_n) { Base64.urlsafe_encode64(jwk.keypair.public_key.n.to_s(binary), padding: false) }
-      let(:jwk_e) { Base64.urlsafe_encode64(jwk.keypair.public_key.e.to_s(binary), padding: false) }
-      let(:headers) { { kid: jwk.kid } }
+    let(:binary) { 2 }
+    let(:jwk) { JWT::JWK.new(OpenSSL::PKey::RSA.new(2048)) }
+    let(:jwk_n) { Base64.urlsafe_encode64(jwk.keypair.public_key.n.to_s(binary), padding: false) }
+    let(:jwk_e) { Base64.urlsafe_encode64(jwk.keypair.public_key.e.to_s(binary), padding: false) }
+    let(:headers) { { kid: jwk.kid } }
 
+    let(:iss) { AppleIdToken::Validator::APPLE_ISSUER }
+    let(:aud) { 'fake_client.apple.com' }
+    let(:exp) { Time.now + 5 }
+
+    let(:payload) {{
+      exp: exp.to_i,
+      iss: iss,
+      aud: aud,
+      sub: 'fake_user_id',
+      email: 'thisisafakeemail@apple.com',
+      email_verified: true
+    }}
+
+    context 'when valid public keys' do
       let(:successful_body_response) {
         {
           keys: [
@@ -62,19 +75,6 @@ RSpec.describe AppleIdToken::Validator do
           body: JSON.dump(successful_body_response)
         )
       end
-
-      let(:iss) { AppleIdToken::Validator::APPLE_ISSUER }
-      let(:aud) { 'fake_client.apple.com' }
-      let(:exp) { Time.now + 5 }
-
-      let(:payload) {{
-        exp: exp.to_i,
-        iss: iss,
-        aud: aud,
-        sub: 'fake_user_id',
-        email: 'thisisafakeemail@apple.com',
-        email_verified: true
-      }}
 
       context 'and valid token info' do
         let(:token) { JWT.encode(payload, jwk.keypair, 'RS256', headers) }
@@ -125,17 +125,46 @@ RSpec.describe AppleIdToken::Validator do
           end
         end
       end
+    end
 
-      context 'and no payload found' do
-        before do
-          allow(validator).to receive(:check_against_certs).and_return(nil)
-        end
+    context 'when no public keys match signature' do
+      let(:successful_body_response) {
+        {
+          keys: [
+            {
+              kty: "RSA",
+              kid: '86D88Kf',
+              use: "sig",
+              alg: "RS256",
+              n: jwk_e,
+              e: jwk_n
+            },
+            {
+              kty: "RSA",
+              kid: '86D88Kz',
+              use: "sig",
+              alg: "RS256",
+              n: jwk_e,
+              e: jwk_n
+            }
+          ]
+        }
+      }
 
-        it 'raises JWTSignatureError' do
-          expect {
-            validator.validate(token: fake_token, aud: fake_aud)
-          }.to raise_error(AppleIdToken::JWTSignatureError)
-        end
+      before do
+        FakeWeb::register_uri(:get,
+          AppleIdToken::Validator::APPLE_JWKS_URI,
+          status: ['200', 'OK'],
+          body: JSON.dump(successful_body_response)
+        )
+      end
+
+      let(:token) { JWT.encode(payload, jwk.keypair, 'RS256', headers) }
+
+      it 'raises JWTSignatureError' do
+        expect {
+          validator.validate(token: token, aud: aud)
+        }.to raise_error(AppleIdToken::JWTSignatureError)
       end
     end
 
