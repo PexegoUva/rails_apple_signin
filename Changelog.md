@@ -1,3 +1,10 @@
+## 0.3.0
+* Improvements
+  * Improved test battery to better check if keys used to sign Apple identity token are correct or not.
+
+* Bugfix
+  * Return nil instead of public keys, when there is no valid public key.
+
 ## 0.2.0
 
 * Additions
